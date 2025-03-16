@@ -1,0 +1,12 @@
+Host: "0.0.0.0"
+Port: 52711
+Prefix: "/v1"
+Mode: "debug"
+API_Key: "<YOUR_API_KEY>"
+ID: "<YOUR_ID>"
+Password: "<YOUR_PASSWORD>"
+
+RateLimit:
+  Rate: 1
+  Burst: 3
+  MaxWait: 1
