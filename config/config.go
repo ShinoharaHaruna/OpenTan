@@ -15,6 +15,7 @@ type Config struct {
 	API_KEY   string      `envconfig:"API_KEY"`
 	ID        string      `envconfig:"ID"`
 	Password  string      `envconfig:"PASSWORD"`
+	UseModel  string      `envconfig:"USE_MODEL"`
 	RateLimit RateLimiter `envconfig:"RATE_LIMIT"`
 }
 

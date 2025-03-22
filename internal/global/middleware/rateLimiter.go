@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"golang.org/x/sync/semaphore"
 	"golang.org/x/time/rate"
+	"log"
 	"net/http"
 	"sync"
 	"time"
@@ -52,12 +53,14 @@ func NewRateLimiter(cfg RateLimiterConfig) gin.HandlerFunc {
 		defer cancel()
 
 		if err := semaphores[key].Acquire(ctx, 1); err != nil {
+			log.Println("RateLimiter triggered: ", err)
 			c.AbortWithStatusJSON(http.StatusTooManyRequests, gin.H{"error": "Too many requests (timeout)"})
 			return
 		}
 		defer semaphores[key].Release(1)
 
 		if !limiter.Allow() {
+			log.Println("RateLimiter exceeded (", cfg.Rate, ")")
 			c.AbortWithStatusJSON(http.StatusTooManyRequests, gin.H{"error": "Too many requests"})
 			return
 		}

@@ -3,7 +3,7 @@ package models
 type ShowModels struct{}
 
 func (p *ShowModels) GetName() string {
-    return "ShowModels"
+	return "ShowModels"
 }
 
 func (p *ShowModels) Init() {}
