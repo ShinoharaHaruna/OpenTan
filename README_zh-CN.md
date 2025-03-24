@@ -53,7 +53,7 @@ OpenTan 是一个 MyTan API 包装器，旨在与 OpenAI API 兼容。更具体�
 
 OpenTan 模拟了 MyTan 的正常使用，因此会在您的历史记录列表中创建大量的对话。因此，如果您想保持 MyTan 帐户历史记录的整洁，请非常保守地使用 OpenTan。
 
-当与 Cline 一起使用时，它很容易生成极长的 prompt，MytTan 可能无法正确响应。
+当与 Cline 一起使用时，它很容易生成极长的 prompt，MytTan 可能无法正确响应。在这种情况下，我个人的最佳实践是放弃原来的会话，并对新会话使用相同的任务提示。
 
 ## 贡献
 

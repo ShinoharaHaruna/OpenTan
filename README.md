@@ -53,7 +53,7 @@ We assume you have a basic understanding of Go and Cline, and that you have alre
 
 OpenTan emulates the normal usage of MyTan, so it creates tons of conversations in your history list. So if you want to keep history of your MyTan account clean, use OpenTan with great conservatism.
 
-When used with Cline, which can easily generate extremely long prompts, MytTan may not respond properly.
+When used with Cline, which can easily generate extremely long prompts, MytTan may not respond properly. In this case, my personal best practice is to abandon the original session and use the same task prompt for a new session.
 
 ## Contributing
 
