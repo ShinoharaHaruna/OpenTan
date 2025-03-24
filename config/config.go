@@ -20,7 +20,7 @@ type Config struct {
 }
 
 type RateLimiter struct {
-	Rate    int `envconfig:"RATE"`
-	Burst   int `envconfig:"BURST"`
-	MaxWait int `envconfig:"MAX_WAIT"`
+	Rate    float64 `envconfig:"RATE"`
+	Burst   int     `envconfig:"BURST"`
+	MaxWait int     `envconfig:"MAX_WAIT"`
 }

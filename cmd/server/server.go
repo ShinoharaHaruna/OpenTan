@@ -9,9 +9,7 @@ import (
 	"OpenTan/utils"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"golang.org/x/time/rate"
 	"log/slog"
-	"time"
 )
 
 var log *slog.Logger
@@ -38,11 +36,11 @@ func Run() {
 	}
 
 	r.Use(middleware.Recovery())
-	r.Use(middleware.NewRateLimiter(middleware.RateLimiterConfig{
-		Rate:    rate.Limit(c.RateLimit.Rate),
-		Burst:   c.RateLimit.Burst,
-		MaxWait: time.Duration(c.RateLimit.MaxWait) * time.Second,
-	}))
+	//r.Use(middleware.NewRateLimiter(middleware.RateLimiterConfig{
+	//	Rate:    rate.Limit(c.RateLimit.Rate),
+	//	Burst:   c.RateLimit.Burst,
+	//	MaxWait: time.Duration(c.RateLimit.MaxWait) * time.Second,
+	//}))
 
 	for _, m := range module.Modules {
 		log.Info(fmt.Sprintf("Init Router: %s", m.GetName()))

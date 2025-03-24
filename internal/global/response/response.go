@@ -8,6 +8,7 @@ import (
 	"github.com/pkg/errors"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
+	"log"
 	"net/http"
 )
 
@@ -57,6 +58,7 @@ func writeResponse(c *gin.Context, code int, response ResponseBody) {
 func Recovery(c *gin.Context) {
 	info := recover()
 	if info != nil {
+		log.Println("Panic recovered:", info)
 		err, ok := info.(error)
 		if ok {
 			Fail(c, errors.WithStack(err))
