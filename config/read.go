@@ -3,6 +3,7 @@ package config
 import (
 	"OpenTan/utils"
 	"fmt"
+	"github.com/fsnotify/fsnotify"
 	"github.com/kelseyhightower/envconfig"
 	"github.com/spf13/viper"
 )
@@ -22,6 +23,16 @@ func init() {
 		fmt.Println("Config file not exist in ", filePath, ". Using environment variables.")
 		utils.PanicOnErr(envconfig.Process(envPrefix, &c)) // Inject environment variables like `ENVPREFIX_XXX`into the c variable
 	}
+
+	viper.WatchConfig()
+	viper.OnConfigChange(func(e fsnotify.Event) {
+		fmt.Printf("Config file changed: %s; ", e.Name)
+		if err := viper.ReadInConfig(); err != nil {
+			fmt.Println("Error reading config file:", err)
+		}
+		utils.PanicOnErr(viper.Unmarshal(&c))
+		fmt.Println("Config file reloaded.")
+	})
 }
 
 // Set manually sets the config and is not recommended to use in production
