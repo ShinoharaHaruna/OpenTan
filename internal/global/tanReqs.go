@@ -9,6 +9,7 @@ import (
 	"OpenTan/utils"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 	"io"
 	"log"
 	"net/http"
@@ -22,8 +23,8 @@ func Login(id, password string) (string, error) {
 	}
 	utils.AddHeader(req, "accept", "application/json, text/plain, */*")
 	utils.AddHeader(req, "content-type", "application/json")
-	utils.AddHeader(req, "origin", "https://mytan.maiseed.com.cn")
-	utils.AddHeader(req, "referer", "https://mytan.maiseed.com.cn/login")
+	utils.AddHeader(req, "origin", model.TAN_URL)
+	utils.AddHeader(req, "referer", model.TAN_URL+"login")
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
@@ -52,7 +53,7 @@ func GetModels() func(c *gin.Context) {
 	utils.AddHeader(req, "accept", "application/json, text/plain, */*")
 	utils.AddHeader(req, "authorization", config.Get().API_KEY)
 	utils.AddHeader(req, "priority", "u=1, i")
-	utils.AddHeader(req, "referer", "https://mytan.maiseed.com.cn/chat")
+	utils.AddHeader(req, "referer", model.TAN_URL+"chat")
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
@@ -111,7 +112,7 @@ func TryRefresh() bool {
 		}
 		log.Println("Token before: ", c.API_KEY)
 		c.API_KEY = "Bearer " + token
-		config.Set(c)
+		// config.Set(c)
 		log.Println("Token after: ", c.API_KEY)
 		// Write the new token back to the config file
 		viper.Set("API_KEY", c.API_KEY)
@@ -121,6 +122,47 @@ func TryRefresh() bool {
 		}
 		return true
 	} else {
+		return false
+	}
+}
+
+func RemoveConv(convID string) bool {
+	rmBody := model.Conversation{
+		ConversationID: convID,
+		UpdateMask:     []string{"status"},
+		Status:         model.SoftDeleted,
+	}
+	req, err := utils.NewTanPostRequest(model.API_BASE+"/conversations/"+convID, utils.Object2Body(rmBody))
+	if err != nil {
+		log.Printf("Error creating request: %v\n", err)
+	}
+	utils.AddHeader(req, "accept", "application/json, text/plain, */*")
+	utils.AddHeader(req, "authorization", config.Get().API_KEY)
+	utils.AddHeader(req, "content-type", "application/json")
+	utils.AddHeader(req, "origin", model.TAN_URL)
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Printf("Error sending request: %v\n", err)
+		return false
+	}
+	defer resp.Body.Close()
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Printf("Error reading response body: %v\n", err)
+		return false
+	}
+	var msg model.RmConvResponse
+	err = json.Unmarshal(respBody, &msg)
+	if err != nil {
+		log.Printf("Error unmarshalling response body: %v\n", err)
+		return false
+	}
+	if msg.Success {
+		return true
+	} else {
+		log.Printf("Error removing conversation: %v\n", convID)
 		return false
 	}
 }

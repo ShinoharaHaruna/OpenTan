@@ -5,10 +5,8 @@ package chat
 import (
 	"OpenTan/internal/global/model"
 	"github.com/gin-gonic/gin"
-	"log"
 	"net/http"
 	"sync"
-	"unsafe"
 )
 
 var mutex sync.Mutex
@@ -28,7 +26,7 @@ func (m *ChatModule) InitRouter(r *gin.RouterGroup) {
 				return
 			}
 
-			log.Printf("Request size: %d Bytes\n", unsafe.Sizeof(req))
+			//log.Printf("Request size: %d Bytes\n", unsafe.Sizeof(req))
 			handler := Completions(req)
 			handler(c)
 		})
