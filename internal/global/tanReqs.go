@@ -113,6 +113,12 @@ func TryRefresh() bool {
 		c.API_KEY = "Bearer " + token
 		config.Set(c)
 		log.Println("Token after: ", c.API_KEY)
+		// Write the new token back to the config file
+		viper.Set("API_KEY", c.API_KEY)
+		err = viper.WriteConfig()
+		if err != nil {
+			log.Println("Error writing config file:", err)
+		}
 		return true
 	} else {
 		return false
