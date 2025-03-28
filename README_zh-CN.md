@@ -44,14 +44,18 @@ OpenTan 是一个 MyTan API 包装器，旨在与 OpenAI API 兼容。更具体�
 2. 选择 `OpenAI Compatible` 作为 API 提供程序。
 3. 设置 API 端点，例如 `http://localhost:52711/v1`。
 4. 在 `API_Key` 中键入任何内容，因为 OpenTan 具有自己的 API 逻辑。
-5. 在 `Model ID` 中键入任何内容，因为 OpenTan 具有自己的模型设置。OpenTan 使用 `gemini-2.0-flash` 作为默认模型，目前您只能在源代码中修改它。但是，我们建议您在 Cline 的 `Model ID` 字段中键入它，以便更好地识别。
+5. 在 `Model ID` 中键入任何内容，因为 OpenTan 具有自己的模型设置。您可以通过配置文件指定使用的模型，而默认配置使得 OpenTan 使用 `gemini-2.0-flash` 作为默认模型。
 6. 现在您可以将 Cline 与 OpenTan 一起使用了！如果您有其他设置，请在 Cline 中进行所需的操作。
 
 ## 已知问题
 
 > 更准确地说，是特性（
 
-OpenTan 模拟了 MyTan 的正常使用，因此会在您的历史记录列表中创建大量的对话。因此，如果您想保持 MyTan 帐户历史记录的整洁，请非常保守地使用 OpenTan。
+~~OpenTan 模拟了 MyTan 的正常使用，因此会在您的历史记录列表中创建大量的对话。因此，如果您想保持 MyTan 帐户历史记录的整洁，请非常保守地使用 OpenTan。~~
+
+**更新**：现在，OpenTan 会在每次请求后清除历史记录，使得 Cline 产生的对话不会影响用户在 MyTan 上正常的历史记录。
+
+---
 
 当与 Cline 一起使用时，它很容易生成极长的 prompt，MytTan 可能无法正确响应。在这种情况下，我个人的最佳实践是放弃原来的会话，并对新会话使用相同的任务提示。
 
