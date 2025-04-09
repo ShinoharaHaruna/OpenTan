@@ -75,6 +75,9 @@ func GetModels() func(c *gin.Context) {
 const (
 	NeedRefCode = "user_forced_login_limit"
 	NeedRefMsg  = "登录设备发生变更。为保障账号安全，请重新登录。"
+
+	UnauthorizedCode = "user_unauthorized"
+	UnauthorizedMsg  = "登录信息过期，请重新登录。"
 )
 
 func TryRefresh() bool {
@@ -104,7 +107,7 @@ func TryRefresh() bool {
 	if len(msg.Errors) < 1 {
 		return false
 	}
-	if msg.Errors[0].Code == NeedRefCode && msg.Errors[0].Message == NeedRefMsg {
+	if (msg.Errors[0].Code == NeedRefCode && msg.Errors[0].Message == NeedRefMsg) || (msg.Errors[0].Code == UnauthorizedCode && msg.Errors[0].Message == UnauthorizedMsg) {
 		c := config.Get()
 		token, err := Login(c.ID, c.Password)
 		if err != nil {
@@ -120,6 +123,7 @@ func TryRefresh() bool {
 		if err != nil {
 			log.Println("Error writing config file:", err)
 		}
+
 		return true
 	} else {
 		return false
