@@ -26,7 +26,7 @@ func init() {
 
 	viper.WatchConfig()
 	viper.OnConfigChange(func(e fsnotify.Event) {
-		fmt.Printf("Config file changed: %s; ", e.Name)
+		fmt.Printf("Config file changed: %s; \n", e.Name)
 		if err := viper.ReadInConfig(); err != nil {
 			fmt.Println("Error reading config file:", err)
 		}
