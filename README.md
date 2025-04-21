@@ -43,6 +43,19 @@ We assume you have a basic understanding of Go and Cline, and that you have alre
 5.  Type anything in `Model ID`, as OpenTan has its own model settings. You can specify the model to use through the configuration file, and the default configuration makes OpenTan use `gemini-2.5-flash` as the default model.
 6.  Now you can use Cline with OpenTan! Configure any further settings you desire within Cline.
 
+## Models
+
+OpenTan's best model is `gemini-2.5-flash`, which performs well when handling long prompts; if you use models like `mai-seed-pro`, you may face some problems.
+
+Here are some recommended models:
+
+- `gpt-4o`: Already good. No consumption.
+- `gpt-4o-mini`: Can meet most needs, no consumption.
+- `gpt-4.1`: Probably better. Normal 1x consumption.
+- `gemini-2.5-flash`: Best practice, taking into account long context and performance. No consumption.
+- `mai-seed-pro`: Based on `Deepseek-V3-0324`, the overall experience is better than `gpt-4o`. No consumption.
+- `mai-seed-think`: Based on `Deepseek-R1`, it feels too heavy. In actual experience, it is not suitable for slightly complex scenes, which will lead to too long thinking time. No consumption.
+
 ## Known Issues
 
 > Or rather, features（
@@ -51,7 +64,7 @@ OpenTan will clear the history after each request, so that the conversations gen
 
 ---
 
-When used with Cline, which can easily generate extremely long prompts, MytTan may not respond properly. In this case, my personal best practice is to abandon the original session and use the same task prompt for a new session. And OpenTan's best model is `gemini-2.5-flash`, which performs well when handling long prompts; if you use models like `mai-seed-pro`, you may face some problems.
+When used with Cline, which can easily generate extremely long prompts, MytTan may not respond properly. In this case, my personal best practice is to abandon the original session and use the same task prompt for a new session.
 
 ## Contributing
 
