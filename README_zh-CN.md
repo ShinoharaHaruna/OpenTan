@@ -16,8 +16,6 @@ OpenTan 是一个 MyTan API 包装器，旨在与 OpenAI API 兼容。更具体�
 >
 > **强烈不建议** 将 Anthropic Claude 的高端模型与 OpenTan 一起使用，因为这可能会对 MyTan 服务器造成巨大损害。
 >
-> 强烈建议对 OpenTan 的 RateLimiter 保持保守配置。
->
 > OpenTan 对因使用 OpenTan 造成的任何后果概不负责。
 
 ## 使用方法
@@ -28,13 +26,11 @@ OpenTan 是一个 MyTan API 包装器，旨在与 OpenAI API 兼容。更具体�
 
 将 `config.template.yml` 文件复制到 `config.yml`。您可以设置运行的主机和端口，并将 `Mode` 更改为 `debug` 以获取更多信息。
 
-`Prefix` 字段用于设置 API 端点的前缀。默认值为 `/v1`，因此 API 端点为 `http://localhost:52711/v1`。
+`Prefix` 字段用于设置 API 端点的前缀。默认值为 `/v1`，因此 API 端点默认为 `http://localhost:52711/v1`。
 
-`ID` 和 `Password` 用于保持您的令牌新鲜。它们与您登录 MyTan 时使用的完全相同。
+`ID` 和 `Password` 用于保持您的令牌新鲜。它们与您登录 MyTan 时使用的完全相同。通常来说，`ID` 是您注册的手机号。
 
-从逻辑上讲，`API_Key` 不是必需的，因为 OpenTan 会自动为您生成一个。但是，您必须将其保存在配置文件中，以确保 OpenTan 的功能正常。
-
-`RateLimit` 部分中的所有字段均以秒为单位。`Rate` 定义每秒允许的请求数，`Burst` 定义令牌桶的大小。`MaxWait` 是请求的最大等待时间。我们 **不建议** 将这些值设置为较高的数字，因为它可能会损害 MyTan。
+从逻辑上讲，`API_Key` 不是必需的，因为 OpenTan 会自动为您生成一个。但是，您必须将其保存在配置文件中，以确保 OpenTan 的功能正常。因此，您可以填入任何内容以开始使用 OpenTan。
 
 ### Cline 集成
 
@@ -44,20 +40,18 @@ OpenTan 是一个 MyTan API 包装器，旨在与 OpenAI API 兼容。更具体�
 2. 选择 `OpenAI Compatible` 作为 API 提供程序。
 3. 设置 API 端点，例如 `http://localhost:52711/v1`。
 4. 在 `API_Key` 中键入任何内容，因为 OpenTan 具有自己的 API 逻辑。
-5. 在 `Model ID` 中键入任何内容，因为 OpenTan 具有自己的模型设置。您可以通过配置文件指定使用的模型，而默认配置使得 OpenTan 使用 `gemini-2.0-flash` 作为默认模型。
+5. 在 `Model ID` 中键入任何内容，因为 OpenTan 具有自己的模型设置。您可以通过配置文件指定使用的模型，而默认配置使得 OpenTan 使用 `gemini-2.5-flash` 作为默认模型。
 6. 现在您可以将 Cline 与 OpenTan 一起使用了！如果您有其他设置，请在 Cline 中进行所需的操作。
 
 ## 已知问题
 
 > 更准确地说，是特性（
 
-~~OpenTan 模拟了 MyTan 的正常使用，因此会在您的历史记录列表中创建大量的对话。因此，如果您想保持 MyTan 帐户历史记录的整洁，请非常保守地使用 OpenTan。~~
-
-**更新**：现在，OpenTan 会在每次请求后清除历史记录，使得 Cline 产生的对话不会影响用户在 MyTan 上正常的历史记录。
+OpenTan 会在每次请求后清除历史记录，使得 Cline 产生的对话不会影响用户在 MyTan 上正常的历史记录。您会在「最近删除」列表中看到它们。
 
 ---
 
-当与 Cline 一起使用时，它很容易生成极长的 prompt，MytTan 可能无法正确响应。在这种情况下，我个人的最佳实践是放弃原来的会话，并对新会话使用相同的任务提示。
+当与 Cline 一起使用时，它很容易生成极长的 prompt，MytTan 可能无法正确响应。在这种情况下，我个人的最佳实践是放弃原来的会话，并对新会话使用相同的任务提示。和 OpenTan 工作最好的模型是 `gemini-2.5-flash`，它在处理长提示时表现良好；如果使用 `mai-seed-pro` 等模型，可能会面临一些问题。
 
 ## 贡献
 
