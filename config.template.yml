@@ -6,9 +6,3 @@ API_Key: "<YOUR_API_KEY>"
 ID: "<YOUR_ID>"
 Password: "<YOUR_PASSWORD>"
 UseModel: "gemini-2.5-flash"  # 必须是 MyTan 支持的模型名，默认使用 gemini-2.5-flash
-
-# RateLimit is now deprecated, as completions API is serialized.
-RateLimit:
-  Rate: 1
-  Burst: 3
-  MaxWait: 1
