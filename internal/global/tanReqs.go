@@ -5,7 +5,6 @@ package global
 import (
 	"OpenTan/config"
 	"OpenTan/internal/global/model"
-	"OpenTan/internal/global/response"
 	"OpenTan/utils"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
@@ -46,28 +45,31 @@ func Login(id, password string) (string, error) {
 }
 
 func GetModels() func(c *gin.Context) {
-	req, err := utils.NewTanGetRequest(model.API_BASE + "/models")
-	if err != nil {
-		return response.NewServerError(500, "Internal Server Error")
-	}
-	utils.AddHeader(req, "accept", "application/json, text/plain, */*")
-	utils.AddHeader(req, "authorization", config.Get().API_KEY)
-	utils.AddHeader(req, "priority", "u=1, i")
-	utils.AddHeader(req, "referer", model.TAN_URL+"chat")
-
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		return response.NewServerError(500, "Internal Server Error")
-	}
-	defer resp.Body.Close()
-
-	respBody, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return response.NewServerError(500, "Internal Server Error")
-	}
-
 	return func(c *gin.Context) {
+		req, err := utils.NewTanGetRequest(model.API_BASE + "/models")
+		if err != nil {
+			c.JSON(500, gin.H{"success": false, "error": err.Error()})
+			return
+		}
+		utils.AddHeader(req, "accept", "application/json, text/plain, */*")
+		utils.AddHeader(req, "authorization", config.Get().API_KEY)
+		utils.AddHeader(req, "priority", "u=1, i")
+		utils.AddHeader(req, "referer", model.TAN_URL+"chat")
+
+		client := &http.Client{}
+		resp, err := client.Do(req)
+		if err != nil {
+			c.JSON(500, gin.H{"success": false, "error": err.Error()})
+			return
+		}
+		defer resp.Body.Close()
+
+		respBody, err := io.ReadAll(resp.Body)
+		if err != nil {
+			c.JSON(500, gin.H{"error": "Internal Server Error"})
+			return
+		}
+
 		c.Data(200, "application/json", respBody)
 	}
 }
@@ -114,11 +116,13 @@ func TryRefresh() bool {
 			utils.PanicOnErr(err)
 		}
 		log.Println("Token before: ", c.API_KEY)
-		c.API_KEY = "Bearer " + token
-		// config.Set(c)
-		log.Println("Token after: ", c.API_KEY)
+		newToken := "Bearer " + token
+		log.Println("Token after: ", newToken)
 		// Write the new token back to the config file
-		viper.Set("API_KEY", c.API_KEY)
+		c.API_KEY = newToken
+		config.Set(*c)
+
+		viper.Set("API_KEY", newToken)
 		err = viper.WriteConfig()
 		if err != nil {
 			log.Println("Error writing config file:", err)

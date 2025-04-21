@@ -2,10 +2,10 @@ package config
 
 import (
 	"OpenTan/utils"
-	"fmt"
 	"github.com/fsnotify/fsnotify"
 	"github.com/kelseyhightower/envconfig"
 	"github.com/spf13/viper"
+	"log"
 )
 
 const defaultFilePath = "./config.yml" // Correct when called from main.go
@@ -20,18 +20,17 @@ func init() {
 		utils.PanicOnErr(viper.ReadInConfig())
 		utils.PanicOnErr(viper.Unmarshal(&c))
 	} else {
-		fmt.Println("Config file not exist in ", filePath, ". Using environment variables.")
+		log.Println("Config file not exist in ", filePath, ". Using environment variables.")
 		utils.PanicOnErr(envconfig.Process(envPrefix, &c)) // Inject environment variables like `ENVPREFIX_XXX`into the c variable
 	}
 
 	viper.WatchConfig()
 	viper.OnConfigChange(func(e fsnotify.Event) {
-		fmt.Printf("Config file changed: %s; \n", e.Name)
+		log.Printf("Config file changed: %s; Reloading...\n", e.Name)
 		if err := viper.ReadInConfig(); err != nil {
-			fmt.Println("Error reading config file:", err)
+			log.Println("Error reading config file:", err)
 		}
 		utils.PanicOnErr(viper.Unmarshal(&c))
-		fmt.Println("Config file reloaded.")
 	})
 }
 
@@ -40,8 +39,8 @@ func Set(config Config) {
 	c = config
 }
 
-func Get() Config {
-	return c
+func Get() *Config {
+	return &c
 }
 
 func IsRelease() bool {
