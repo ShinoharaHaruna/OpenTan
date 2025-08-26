@@ -44,7 +44,7 @@ func Run() {
 
 	// Try refreshing token every launch of the server
 	updated := global.TryRefresh()
-	if updated {
+	if updated && config.IsDebug() {
 		log.Info(fmt.Sprintf("Token refreshed: %s", c.API_KEY))
 	}
 

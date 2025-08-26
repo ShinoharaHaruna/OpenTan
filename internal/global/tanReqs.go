@@ -15,8 +15,20 @@ import (
 )
 
 func Login(id, password string) (string, error) {
-	body := `{"identity":"` + id + `","password":"` + password + `","remember":true}`
-	req, err := utils.NewTanPostRequest(model.API_BASE+"/users/login", utils.JsonString2Body(body))
+	loginReq := struct {
+		Identity string `json:"identity"`
+		Password string `json:"password"`
+		Remember bool   `json:"remember"`
+	}{
+		Identity: id,
+		Password: password,
+		Remember: true,
+	}
+	bodyBytes, err := json.Marshal(loginReq)
+	if err != nil {
+		return "", err
+	}
+	req, err := utils.NewTanPostRequest(model.API_BASE+"/users/login", utils.JsonString2Body(string(bodyBytes)))
 	if err != nil {
 		return "", err
 	}
@@ -115,9 +127,13 @@ func TryRefresh() bool {
 		if err != nil {
 			utils.PanicOnErr(err)
 		}
-		log.Println("Token before: ", c.API_KEY)
+		if config.IsDebug() {
+			log.Println("Token before: ", c.API_KEY)
+		}
 		newToken := "Bearer " + token
-		log.Println("Token after: ", newToken)
+		if config.IsDebug() {
+			log.Println("Token after: ", newToken)
+		}
 		// Write the new token back to the config file
 		c.API_KEY = newToken
 		config.Set(*c)

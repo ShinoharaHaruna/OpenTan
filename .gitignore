@@ -39,3 +39,6 @@ config.yml
 
 TanModels.json
 OpenTan
+
+# Claude Code
+.claude/
