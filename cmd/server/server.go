@@ -36,6 +36,7 @@ func Run() {
 	}
 
 	r.Use(middleware.Recovery())
+	r.Use(middleware.RequestSizeLimiter())
 
 	for _, m := range module.Modules {
 		log.Info(fmt.Sprintf("Init Router: %s", m.GetName()))

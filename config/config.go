@@ -8,12 +8,13 @@ const (
 )
 
 type Config struct {
-	Host     string `envconfig:"HOST"`
-	Port     string `envconfig:"PORT"`
-	Prefix   string `envconfig:"PREFIX"`
-	Mode     Mode   `envconfig:"MODE"`
-	API_KEY  string `envconfig:"API_KEY"`
-	ID       string `envconfig:"ID"`
-	Password string `envconfig:"PASSWORD"`
-	UseModel string `envconfig:"USE_MODEL"`
+	Host            string `envconfig:"HOST"`
+	Port            string `envconfig:"PORT"`
+	Prefix          string `envconfig:"PREFIX"`
+	Mode            Mode   `envconfig:"MODE"`
+	API_KEY         string `envconfig:"API_KEY"`
+	ID              string `envconfig:"ID"`
+	Password        string `envconfig:"PASSWORD"`
+	UseModel        string `envconfig:"USE_MODEL"`
+	MaxRequestSize  int    `envconfig:"MAX_REQUEST_SIZE"` // Maximum request size in bytes
 }
