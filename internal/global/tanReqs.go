@@ -7,11 +7,12 @@ import (
 	"OpenTan/internal/global/model"
 	"OpenTan/utils"
 	"encoding/json"
-	"github.com/gin-gonic/gin"
-	"github.com/spf13/viper"
 	"io"
 	"log"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 )
 
 func Login(id, password string) (string, error) {
@@ -172,15 +173,23 @@ func RemoveConv(convID string) bool {
 		return false
 	}
 	defer resp.Body.Close()
+
+	// 检查 HTTP 状态码 / Check HTTP status code
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		log.Printf("RemoveConv failed with status %d for conversation %s\n", resp.StatusCode, convID)
+		return false
+	}
+
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		log.Printf("Error reading response body: %v\n", err)
 		return false
 	}
+
 	var msg model.RmConvResponse
 	err = json.Unmarshal(respBody, &msg)
 	if err != nil {
-		log.Printf("Error unmarshalling response body: %v\n", err)
+		log.Printf("Error unmarshalling response body: %v, status: %d, body: %s\n", err, resp.StatusCode, string(respBody))
 		return false
 	}
 	if msg.Success {
