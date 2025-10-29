@@ -12,10 +12,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"io"
 	"log"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 func Completions(oreq model.OpenAICompletionsRequest) func(c *gin.Context) {
@@ -81,6 +82,7 @@ func Completions(oreq model.OpenAICompletionsRequest) func(c *gin.Context) {
 			c.Writer.Header().Set("Connection", "keep-alive")
 
 			reader := bufio.NewReader(resp.Body)
+			firstChunkHandled := false
 			for {
 				lineBytes, _, err := reader.ReadLine()
 				if err != nil {
@@ -95,19 +97,47 @@ func Completions(oreq model.OpenAICompletionsRequest) func(c *gin.Context) {
 					return
 				}
 
-				// By the way get the conversation ID from the response
-				if convID == "" {
-					// So convID is not filled yet
-					if len(lineBytes) > 0 {
-						var r model.StreamResponse
-						lineData := lineBytes[bytes.IndexByte(lineBytes, '{'):]
-						err = json.Unmarshal(lineData, &r)
-						if err != nil {
+				jsonStart := bytes.IndexByte(lineBytes, '{')
+				if jsonStart != -1 {
+					prefix := lineBytes[:jsonStart]
+					lineData := lineBytes[jsonStart:]
+
+					var raw map[string]interface{}
+					if errRaw := json.Unmarshal(lineData, &raw); errRaw == nil {
+						choices, ok := raw["choices"].([]interface{})
+						if ok && len(choices) > 0 {
+							if choiceMap, ok := choices[0].(map[string]interface{}); ok {
+								if deltaMap, ok := choiceMap["delta"].(map[string]interface{}); ok {
+									if _, hasReasoning := deltaMap["reasoning_content"]; !hasReasoning {
+										// Ensure reasoning_content key exists for downstream clients
+										deltaMap["reasoning_content"] = ""
+										if patched, errMarshal := json.Marshal(raw); errMarshal == nil {
+											lineData = patched
+											lineBytes = append(prefix, patched...)
+										}
+									}
+								}
+							}
+						}
+					}
+
+					var r model.StreamResponse
+					if err = json.Unmarshal(lineData, &r); err != nil {
+						if convID == "" {
 							fmt.Printf("Error unmarshaling JSON: %v, body: %s\n", err, string(lineData))
 							response.NewServerError(500, "Failed to unmarshal response")(c)
 							return
 						}
-						convID = r.ConversationID
+					} else {
+						if convID == "" {
+							convID = r.ConversationID
+						}
+						if !firstChunkHandled {
+							firstChunkHandled = true
+							if len(r.Choices) > 0 && r.Choices[0].Delta.Content == "" {
+								continue
+							}
+						}
 					}
 				}
 
